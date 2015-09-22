@@ -18,6 +18,7 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
 
 import com.pulsardev.config.Constant;
+import com.pulsardev.sound.GameSound;
 
 public class ResourcesManager {
 	//---------------------------------------------
@@ -40,8 +41,6 @@ public class ResourcesManager {
 	public ITextureRegion m_options_region;
 	public ITextureRegion m_exit_region;
 
-	private BuildableBitmapTextureAtlas m_menu_texture_atlas;
-
 	public ITextureRegion m_game_background_region;
 	private BuildableBitmapTextureAtlas m_game_texture_atlas;
 
@@ -51,9 +50,11 @@ public class ResourcesManager {
 	public BitmapTextureAtlas[] m_button_atlas;
 	public TextureRegion[] m_button_region;
 
+	public BitmapTextureAtlas m_progress_atlas;
+	public TextureRegion m_progress_region;
+
 	
-	public BitmapTextureAtlas m_square_atlas;
-	public TextureRegion m_square_region;
+	GameSound sound;
 	//---------------------------------------------
 	// TEXTURES & TEXTURE REGIONS
 	//---------------------------------------------
@@ -77,10 +78,6 @@ public class ResourcesManager {
 
 	}
 
-	private void loadMenuAudio()
-	{
-
-	}
 
 	private void loadGameGraphics()
 	{
@@ -97,13 +94,6 @@ public class ResourcesManager {
 			m_number_region[i] = BitmapTextureAtlasTextureRegionFactory.createFromAsset(m_number_atlas[i], m_activity,Constant.ITEM_NAME_NUMBER[i], 0, 0);
 			m_engine.getTextureManager().loadTexture(m_number_atlas[i]);
 		}
-		/*
-		 * Load square to make to grid
-		 * 
-		 */
-		m_square_atlas = new BitmapTextureAtlas(m_engine.getTextureManager(), 128, 128, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		m_square_region = BitmapTextureAtlasTextureRegionFactory .createFromAsset(m_square_atlas, m_activity, "square_grid.png", 0, 0);
-		m_engine.getTextureManager().loadTexture(m_square_atlas);
 		
 		/*
 		 * Load button sprite
@@ -116,6 +106,13 @@ public class ResourcesManager {
 			m_button_region[i] = BitmapTextureAtlasTextureRegionFactory.createFromAsset(m_button_atlas[i], m_activity,Constant.ITEM_NAME_BUTTON[i], 0, 0);
 			m_engine.getTextureManager().loadTexture(m_button_atlas[i]);
 		}
+		/*
+		 * Load progress bar
+		 */
+		
+		m_progress_atlas = new BitmapTextureAtlas(m_engine.getTextureManager(), 512, 128, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		m_progress_region = BitmapTextureAtlasTextureRegionFactory .createFromAsset(m_progress_atlas, m_activity, "progressbar.png", 0, 0);
+		m_engine.getTextureManager().loadTexture(m_progress_atlas);
 	}
 
 	private void loadGameFonts()
@@ -128,7 +125,8 @@ public class ResourcesManager {
 
 	private void loadGameAudio()
 	{
-
+		sound = new GameSound();
+		sound.loadSound();
 	}
 
 	public void loadSplashScreen()

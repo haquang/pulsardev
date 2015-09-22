@@ -1,6 +1,7 @@
 package com.pulsardev.util;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -19,8 +20,10 @@ public class Util
 		if (2 == matrix.size())
 			return (1 == matrix.get(1) - matrix.get(0));
 		else {
-			int val = matrix.remove(0);
-			return (1 == matrix.get(0) -  val) && checkContinuous(matrix);
+			ArrayList<Integer> arr = new ArrayList<Integer>(matrix);
+			arr.remove(0);
+			int val = matrix.get(0);
+			return (1 == matrix.get(1) -  val) && checkContinuous(arr);
 		}
 	}
 	public static ArrayList<Integer> checkRow(ArrayList<Integer> matrix,int size){
@@ -50,7 +53,7 @@ public class Util
 			}
 			subArray.clear();
 		}
-	
+
 		return result;
 	}
 
@@ -68,5 +71,27 @@ public class Util
 			subArray.add(matrix.get(j+i*size));			
 		return checkContinuous(subArray);
 	}
+
+	public static void printMatrix(ArrayList<Integer> matrix,int size){
+		
+		ArrayList<Integer> subArray =  new ArrayList<Integer>();
+		
+		for (int i = 0;i<size;i++){
+			for (int j = 0;j<size;j++){
+				subArray.add(matrix.get(i*size+j));
+			}
+			Log.i("CandyCrush", String.valueOf(subArray));
+			subArray.clear();
+		}
+		return;
+		
+	}
+	
+	 public static void resizeDialog(View view)
+	  {
+	   int i = view.getLayoutParams().height * (GameActivity.getCameraWidth() - 50) / view.getLayoutParams().width;
+	    view.getLayoutParams().height = i;
+	    view.getLayoutParams().width = (GameActivity.getCameraWidth() - 50);
+	  }
 }
 

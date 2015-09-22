@@ -10,33 +10,28 @@
         android:layout_height="300px"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:background="@drawable/bg_dialog"
+        android:background="@drawable/gameover"
         android:padding="10dp" >
 
         <LinearLayout
             android:id="@+id/linearLayout2"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true" >
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:orientation="horizontal"
+            android:gravity="bottom|center_horizontal">
+           </LinearLayout>
 
-            <Button
-                android:id="@+id/button_tryagain"
-                style="@style/txt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.26"
-                android:background="@drawable/click_button_min"
-                android:text="Try Again"
-                android:textSize="18sp" />
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+        <Button
+            android:id="@+id/button_tryagain"
+                android:layout_width="348px"
+                android:layout_height="120px"
+            android:layout_alignBottom="@+id/linearLayout2"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/txt_gameover" />
+            android:layout_marginBottom="27dp"
+            android:background="@drawable/btn_retry" />
+
     </RelativeLayout>
 
 </RelativeLayout>

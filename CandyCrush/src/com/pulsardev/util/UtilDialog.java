@@ -1,19 +1,16 @@
 package com.pulsardev.util;
+import com.pulsardev.candycrush.R;
 
 import android.app.Dialog;
+import android.view.Window;
 
 public class UtilDialog
 {
   public static void iniDialog(Dialog paramDialog)
   {
-    paramDialog.requestWindowFeature(1);
-    paramDialog.getWindow().setBackgroundDrawableResource(2130837506);
+    paramDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+    paramDialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_null);
     paramDialog.setCancelable(false);
-    paramDialog.getWindow().getAttributes().windowAnimations = 2131230725;
+    paramDialog.getWindow().getAttributes().windowAnimations = R.style.Animations_Dialog;
   }
 }
-
-/* Location:           /home/haquang/workspace/Android2Java/CandyCatcherV2.0_dex2jar.jar
- * Qualified Name:     com.pulsardev.util.UtilDialog
- * JD-Core Version:    0.6.2
- */

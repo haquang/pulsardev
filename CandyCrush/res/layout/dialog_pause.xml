@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical" >
 
     <RelativeLayout
         android:id="@+id/dialogPauseLayout"
@@ -10,69 +10,27 @@
         android:layout_height="300px"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:background="@drawable/bg_dialog"
+        android:background="@drawable/pause"
         android:padding="10dp" >
 
         <LinearLayout
             android:id="@+id/linearLayout2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true" >
-
-            <Button
-                android:id="@+id/button_reset"
-                style="@style/txt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/click_button_min"
-                android:text="Reset"
-                android:textSize="18sp" />
-
-            <Button
-                android:id="@+id/button_setting"
-                style="@style/txt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_weight="1"
-                android:background="@drawable/click_button_min"
-                android:text="Setting"
-                android:textSize="18sp" />
-
-            <Button
-                android:id="@+id/button_menu"
-                style="@style/txt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/button_reset"
-                android:layout_toRightOf="@+id/button_setting"
-                android:layout_weight="1"
-                android:background="@drawable/click_button_min"
-                android:text="Menu"
-                android:textSize="18sp" />
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/txt_pause" />
-
-        <Button
-            android:id="@+id/button_continue"
-            style="@style/txt"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:gravity="bottom|center_horizontal"
+            android:orientation="horizontal" >
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/button_tryagain"
+            android:layout_width="456px"
+            android:layout_height="92px"
+            android:layout_alignBottom="@+id/linearLayout2"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp"
-            android:layout_weight="1"
-            android:background="@drawable/click_button_min"
-            android:text="Continue"
-            android:textSize="18sp" />
+            android:layout_marginBottom="27dp"
+            android:background="@drawable/btn_resume" />
     </RelativeLayout>
 
 </RelativeLayout>

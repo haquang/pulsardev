@@ -1,68 +1,131 @@
 package com.pulsardev.candycrush;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.ButtonSprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
-import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
-import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.util.adt.color.Color;
-import org.andengine.util.debug.Debug;
-
-import com.badlogic.gdx.math.Vector2;
 import com.pulsardev.candycrush.GameScene;
 import com.pulsardev.candycrush.SceneManager.SceneType;
-import com.pulsardev.components.NumItem;
-import com.pulsardev.components.Square;
+import com.pulsardev.components.Matrix2D;
+import com.pulsardev.components.NumSprite;
+import com.pulsardev.components.ProgressBar;
+import com.pulsardev.components.Score;
 import com.pulsardev.config.Constant;
+import com.pulsardev.dialog.DialogExit;
+import com.pulsardev.dialog.DialogGameOver;
+import com.pulsardev.dialog.DialogLevel;
+import com.pulsardev.dialog.DialogPause;
 import com.pulsardev.util.Util;
 
+import android.graphics.Point;
 import android.util.Log;
-import android.widget.Toast;
 
 
 public class GameScene extends BaseScene {
 	private HUD gameHUD;
 	private Text t_score_text;
-	private int i_score = 0;
-	private PhysicsWorld m_physical_world;
-
+	private Score _score; 
 	private ButtonSprite btn_exit;
-	private ButtonSprite btn_music;
 	private ButtonSprite btn_play;
 	private ButtonSprite btn_restart;
 	private ButtonSprite btn_settings;
 	private ButtonSprite btn_sound_on;
 	private ButtonSprite btn_sound_off;
 	private ButtonSprite btn_pause;
+	private ProgressBar m_progress_bar;
 
-
-	private ArrayList<NumItem> m_list_num;
-	private ArrayList<Integer> m_game_state;
-	ArrayList<Integer> subArrayRow;
-	ArrayList<Integer> subArrayCol;
-	private int grid_size;
-	private int square_size;
-	private float shift_row = 0;
-	private float shift_col = 0;
-	int zero_position;
+	HashMap<Point, NumSprite> _map;
+	int shift_row = 0;
+	int shift_col = 0;
+	int game_zone_height;
+	int square_size;
+	int grid_size = Constant.GRID_SIZE_DEFAULT;
+	int _level = 1;
+	boolean sound_on = true;
+	Matrix2D m_game_state;
+	ArrayList<Integer> archiveRow;
+	ArrayList<Integer> archiveCol;
+	ArrayList<Integer> removeList;
 	boolean cross_down = false;
 	boolean cross_up = false;
 	@Override
 	public void createScene() {
 		// TODO Auto-generated method stub
 		createBackground();
-		createPhysics();
-		createSquareGrid();
-		//	createNumberItem();
+		initialize();
+		initSize();
 		createButton();
 		createHUD();
+		createGame();
+		createProgressBar();
+	}
+	private void createProgressBar() {
+		// TODO Auto-generated method stub
+		m_progress_bar = new ProgressBar(GameActivity.getCameraWidth()/2 , (int) (0.95*GameActivity.getCameraHeight()), m_resource_manager.m_progress_region, m_vbom,square_size * grid_size);
+		m_progress_bar.setTotalTime(_level * 120);
+		m_progress_bar.start();
+	}
+	private void createGame() {
+		Point p;
+
+		// Create random matrix
+		m_game_state.createRandomMatrix();
+		m_game_state.showMatrix2D();
+
+		// Create NumItem & add to Hash table
+		try {
+			for (int i = 0;i<grid_size;i++)
+				for (int j = 0;j< grid_size;j++){
+					p = m_game_state.getPxPy(i,j);
+					NumSprite item = new NumSprite(p.x, p.y, m_game_state.getMatrix()[i][j]);
+					item.setMatrixPosition(i, j);
+					Log.i(Constant.TAG, "MAP : " + String.valueOf(_map.size()));
+					_map.put(p, item);
+				}
+			NumSprite.m_game_state = m_game_state;
+		} catch (Exception e) {
+			Log.i(Constant.TAG, e.toString());
+		}
+
+	}
+	private void initialize() {
+		_level = 1;
+		grid_size = Constant.GRID_SIZE_DEFAULT;
+		// Sprite class init
+		NumSprite.m_scene = this;
+		NumSprite.m_activity = this.m_activity;
+		NumSprite.m_texture_region = m_resource_manager.m_number_region;
+		NumSprite.m_vbom = m_resource_manager.m_vbom;
+
+		// Dialog
+		DialogExit.m_scene = this;
+		DialogGameOver.m_scene = this;
+		DialogPause.m_scene = this;
+		DialogLevel.m_scene = this;
+		// Map
+		_map = new HashMap<Point, NumSprite>();
+		removeList = new ArrayList<Integer>();
+		ProgressBar._scene = this;
+
+		m_game_state = new Matrix2D(grid_size);
+	}
+	private void initSize(){
+		game_zone_height = (int) (0.9 * GameActivity.getCameraHeight());
+		square_size = game_zone_height/grid_size;
+		shift_col = (GameActivity.getCameraWidth() - grid_size * square_size)/2 + square_size/2;
+		shift_row = square_size/2;
+		// Matrix class init
+		Matrix2D._item_size = square_size;
+
+		Matrix2D._shift_row = shift_row;
+		Matrix2D._shift_col = shift_col;
+		NumSprite._size = square_size;
 	}
 	private void createBackground(){
 		setBackground(new Background(Color.BLACK));
@@ -70,13 +133,20 @@ public class GameScene extends BaseScene {
 
 	private void createButton(){
 		// Button Exit
-		btn_exit = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 , GameActivity.getCameraHeight()/5, m_resource_manager.m_button_region[Constant.BTN_EXIT], m_vbom){
+		btn_exit = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 , GameActivity.getCameraHeight()/4, m_resource_manager.m_button_region[Constant.BTN_EXIT], m_vbom){
 			@Override
 			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				if(pTouchEvent.isActionDown()) {
-					this.setScale(1.0f);
-				} else if (pTouchEvent.isActionUp()) {
-					this.setScale(0.75f);
+					pauseGame();				
+					m_activity.runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							new DialogExit(m_activity).show();
+						}
+					});
+
 				}
 				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
 			}
@@ -85,30 +155,15 @@ public class GameScene extends BaseScene {
 		btn_exit.setScale(0.75f);
 		attachChild(btn_exit);
 
-		// Button Music
-		btn_music = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 , 2 * GameActivity.getCameraHeight()/5, m_resource_manager.m_button_region[Constant.BTN_MUSIC], m_vbom){
-			@Override
-			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if(pTouchEvent.isActionDown()) {
-					this.setScale(1.0f);
-				} else if (pTouchEvent.isActionUp()) {
-					this.setScale(0.75f);
-				}
-				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
-			}
-
-		};
-		btn_music.setScale(0.75f);
-		registerTouchArea(btn_music);
-		attachChild(btn_music);
-
 		// Button sound on
 
-		btn_sound_on = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 , 3 * GameActivity.getCameraHeight()/5, m_resource_manager.m_button_region[Constant.BTN_SOUND_ON], m_vbom){
+		btn_sound_on = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 ,  GameActivity.getCameraHeight()/2, m_resource_manager.m_button_region[Constant.BTN_SOUND_ON], m_vbom){
 			@Override
 			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+
 				if(pTouchEvent.isActionDown()) {
 					this.setVisible(false);
+					sound_on = false;
 					btn_sound_off.setVisible(true);
 				}
 				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
@@ -119,11 +174,12 @@ public class GameScene extends BaseScene {
 		registerTouchArea(btn_sound_on);
 		attachChild(btn_sound_on);
 		// Button sound off
-		btn_sound_off = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 , 3 * GameActivity.getCameraHeight()/5, m_resource_manager.m_button_region[Constant.BTN_SOUND_OFF], m_vbom){
+		btn_sound_off = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 ,  GameActivity.getCameraHeight()/2, m_resource_manager.m_button_region[Constant.BTN_SOUND_OFF], m_vbom){
 			@Override
 			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				if(pTouchEvent.isActionDown()) {
 					this.setVisible(false);
+					sound_on = true;
 					btn_sound_on.setVisible(true);
 				}
 				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
@@ -135,13 +191,20 @@ public class GameScene extends BaseScene {
 		registerTouchArea(btn_sound_off);
 		attachChild(btn_sound_off);
 		// Button Settings
-		btn_settings = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 , 4 * GameActivity.getCameraHeight()/5, m_resource_manager.m_button_region[Constant.BTN_SETTINGS], m_vbom){
+		btn_settings = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 , 3 * GameActivity.getCameraHeight()/4, m_resource_manager.m_button_region[Constant.BTN_SETTINGS], m_vbom){
 			@Override
 			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				pauseGame();
 				if(pTouchEvent.isActionDown()) {
-					this.setScale(1.0f);
-				} else if (pTouchEvent.isActionUp()) {
-					this.setScale(0.75f);
+					m_activity.runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							new DialogLevel(m_activity).show();
+						}
+					});
+
 				}
 				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
 			}
@@ -154,9 +217,18 @@ public class GameScene extends BaseScene {
 		btn_play = new ButtonSprite(shift_col/3 , 2*GameActivity.getCameraHeight()/5, m_resource_manager.m_button_region[Constant.BTN_PLAY], m_vbom){
 			@Override
 			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				pauseGame();
 				if(pTouchEvent.isActionDown()) {
-					this.setVisible(false);
-					btn_pause.setVisible(true);
+					//					this.setVisible(false);
+					//	btn_pause.setVisible(true);
+					m_activity.runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							new DialogPause(m_activity).show();
+						}
+					});
 				}
 				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
 			}
@@ -167,28 +239,30 @@ public class GameScene extends BaseScene {
 
 		attachChild(btn_play);
 
-		btn_pause = new ButtonSprite(shift_col/3 , 2*GameActivity.getCameraHeight()/5, m_resource_manager.m_button_region[Constant.BTN_PAUSE], m_vbom){
-			@Override
-			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if(pTouchEvent.isActionDown()) {
-					this.setVisible(false);
-					btn_play.setVisible(true);
-				} 
-				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
-			}
-
-		};
-		btn_pause.setScale(0.75f);
-		registerTouchArea(btn_pause);
-		btn_pause.setVisible(false);
-		attachChild(btn_pause);
+		//		btn_pause = new ButtonSprite(shift_col/3 , 2*GameActivity.getCameraHeight()/5, m_resource_manager.m_button_region[Constant.BTN_PAUSE], m_vbom){
+		//			@Override
+		//			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		//				if(pTouchEvent.isActionDown()) {
+		//					this.setVisible(false);
+		//					btn_play.setVisible(true);
+		//					resumeGame();
+		//
+		//				} 
+		//				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+		//			}
+		//
+		//		};
+		//		btn_pause.setScale(0.75f);
+		//		registerTouchArea(btn_pause);
+		//		btn_pause.setVisible(false);
+		//		attachChild(btn_pause);
 
 		// Button restart
 		btn_restart = new ButtonSprite(shift_col/3 , GameActivity.getCameraHeight()/5, m_resource_manager.m_button_region[Constant.BTN_RESTART], m_vbom){
 			@Override
 			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				if(pTouchEvent.isActionDown()) {
-					restart();
+					restartGame();
 				}
 				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
 			}
@@ -199,200 +273,263 @@ public class GameScene extends BaseScene {
 		attachChild(btn_restart);
 	}
 
-	public void createSquareGrid(){
-		int pos;
-		grid_size = Constant.GRID_SIZE_DEFAULT;
-		square_size = GameActivity.getCameraHeight()/grid_size;
-		shift_row = square_size/2;
-		shift_col = (GameActivity.getCameraWidth() - grid_size * square_size)/2 + square_size/2;
-		new ArrayList<Square>();
-		m_list_num = new ArrayList<NumItem>();
-		m_game_state = randomMatrixGenerator(Constant.MAX_ITEM_NUM);
-		subArrayRow = new ArrayList<Integer>();
-		subArrayCol = new ArrayList<Integer>();
-
-		for (int i = 0;i< grid_size;i++)
-			for (int j = 0;j< grid_size;j++){
-				pos = i*grid_size+j;
-				if (m_game_state.get(pos) != 0){
-					NumItem btn_sprite = new NumItem(j*square_size, i*square_size, m_resource_manager.m_number_region[m_game_state.get(pos) - 1], m_vbom) {
-						@Override
-						public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX,
-								float pTouchAreaLocalY) {
-							if (pTouchEvent.isActionDown()){
-								onClickNumber(this);
-							}
-
-							return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
-						}
-					};
-					btn_sprite.setScale(square_size/btn_sprite.getHeight());
-					btn_sprite.setshift(shift_col, shift_row);
-					btn_sprite.setRow(i+1);
-					btn_sprite.setCol(j+1);
-					btn_sprite.setSize(square_size);
-					registerTouchArea(btn_sprite);
-					attachChild(btn_sprite);
-					m_list_num.add(btn_sprite);
-				} else {
-					NumItem btn_sprite = new NumItem(j*square_size, i*square_size, m_resource_manager.m_square_region, m_vbom);
-					btn_sprite.setScale(square_size/btn_sprite.getHeight());
-					btn_sprite.setshift(shift_col, shift_row);
-					btn_sprite.setRow(i+1);
-					btn_sprite.setCol(j+1);
-					btn_sprite.setSize(square_size);
-					attachChild(btn_sprite);
-					m_list_num.add(btn_sprite);
-					zero_position = m_list_num.size() - 1;
-				}
-			}
+	public void pauseGame(){
+		m_progress_bar.pause();
+		NumSprite.istouchable = false;
 	}
 
-	public ArrayList<Integer> randomMatrixGenerator(int N){
-		ArrayList<Integer> matrix = new ArrayList<Integer>();
-		ArrayList<Integer> list = new ArrayList<>(N);
-		for (int i = 1; i <= N; i++){
-			list.add(i);
-		}
-		for (int count = 0; count < N; count++){
-			matrix.add(list.remove((int)(Math.random() * list.size())));
-		}
-		matrix.add(0); 
-		return matrix;
+	public void resumeGame(){
+		m_progress_bar.resume();
+		NumSprite.istouchable = true;
 	}
 
-	public void restart(){
-		m_game_state.clear();
-		for (int i = 0;i<m_list_num.size();i++)
-			m_list_num.get(i).detachSelf();
-		m_list_num.clear();
-		createSquareGrid();
+	public void quitGame(){
+		NumSprite.istouchable = false;
+		removeMap();
+		removeList.clear();
+		m_progress_bar.stop();
+		System.exit(0);
 	}
+	public void removeMap(){
 
-	public void onClickNumber(NumItem sprite){
-		if (isMoveable(sprite)){
-			int index = m_list_num.indexOf(sprite);
-
-			//		for (int i = 0;i<m_list_num.size();i++)
-			//			m_list_num.get(i).resetPosition();
-			toogle(sprite, m_list_num.get(zero_position));
-			//		Collections.swap(m_list_num, index, zero_position);
-			Log.i("CandyCrush", String.valueOf(m_game_state));
-			checkState();
-			updateState();
-		} else {
-			Log.i("CandyCrush", "Item not moveable");
-		}
-	}
-
-	public void updateState(){
-		int pos;
-		if (!subArrayRow.isEmpty()){
-			pos = subArrayRow.remove(0);
-			removeRow(pos);
-		}
-		if (!subArrayCol.isEmpty()){
-			pos = subArrayCol.remove(0);
-			removeCol(pos);
-		}
-		if (cross_down)
-			Log.i("CandyCrush", "CROSS_DOWN");
-		for (int i=0;i<grid_size ;i++)
-			for (int j=0;j<grid_size ;j++){
-			if ((i==j) && cross_up){
-				removeItem(i, j);
-			} else if (((i+j) == (grid_size - 1)) && cross_down){
-				removeItem(i, j);
-			}
-		}
-	}
-
-	public void toogle(NumItem sprite,NumItem target){
-		int r,c;
-		r = sprite.getRow();
-		c = sprite.getCol();
-		sprite.setRow(target.getRow());
-		sprite.setCol(target.getCol());
-		target.setCol(c);
-		target.setRow(r);
-		target.resetPosition();
-		sprite.resetPosition();	
-	}
-
-	public Boolean isMoveable(NumItem item) {
-		int touch_row = item.getRow();
-		int touch_col = item.getCol();
-		int touch_pos = (touch_row-1)*grid_size + touch_col - 1;
-		int zero_pos = m_game_state.indexOf(0);
-		int zero_row = zero_pos / grid_size + 1;
-		int zero_col = zero_pos % grid_size + 1;
-		for (int i = touch_row - 1;i <= touch_row + 1;i++)
-			for (int j = touch_col - 1;j <= touch_col + 1;j++)
-			{
-				if ((i == zero_row) && (j == zero_col) && ((i == touch_row) || (j == touch_col))){
-					// Update game state
-					m_game_state.set(zero_pos, m_game_state.get(touch_pos));
-					m_game_state.set(touch_pos, 0);					
-					return true;
-				}
-			}
-		return false;
-	}
-	public void removeRow(int i){
-		for (int j = 0;j<grid_size;j++)
-			removeItem(i,j);
-	}
-
-	public void removeCol(int j){
 		for (int i = 0;i<grid_size;i++)
-			removeItem(i,j);
+			for (int j=0;j<grid_size;j++){
+				Point p = m_game_state.getPxPy(i, j);
+				if (_map.containsKey(p)){
+					NumSprite sprite = _map.get(p);
+					sprite.destroy();
+					_map.remove(p);
+				}
+			}
+	}
+	public void restartGame(){
+		removeMap();
+		m_progress_bar.reset();
+		m_progress_bar.start();
+		removeList.clear();
+		_score.reset();
+		createGame();
 	}
 
-	public void removeItem(int row,int col){
-		for (int i = 0;i < m_list_num.size();i++){
-			Log.i("CandyCrush", "remove: [ " + String.valueOf(row) + ":" + String.valueOf(col)+ "]\n"); 
-			if ((row == m_list_num.get(i).getRow()-1) && (col == m_list_num.get(i).getCol()-1)){
-				m_list_num.get(i).detachSelf();
-				m_list_num.remove(i);
+	public void levelChange() {
+
+		initSize();
+		m_progress_bar.setTotalTime(_level * 120);
+		_score.setLevel(_level);
+		_score.reset();
+		removeList.clear();
+		m_game_state.setSize(grid_size);
+		createGame();
+		NumSprite.istouchable = true;
+		m_progress_bar.resume();
+	}
+
+	public void onTouchMovable(NumSprite sprite){
+		NumSprite.istouchable = false;
+		Point p0 = m_game_state.getZeroPxPy();
+		Point p1 = new Point();
+		p1.set(sprite.getPx(),sprite.getPy() );
+
+		// toogle 2 sprite
+		toogle(p0, p1);
+		// update game_state
+		updateGameState(sprite);
+		// Check if archive target
+		if (isArchive()){
+			processArchivement();
+			if (sound_on)
+				m_resource_manager.sound.playArchive();
+		} else {
+			NumSprite.istouchable = true;
+		}
+	}
+
+	private void processArchivement() {
+		// TODO Auto-generated method stub
+		if (!archiveRow.isEmpty()){
+			for (int i = 0;i<archiveRow.size();i++)
+			{
+				// remove row from hash
+				for (int j = 0;j< grid_size;j++){
+					Point p = m_game_state.getPxPy(archiveRow.get(i),j);
+					NumSprite sprite = _map.get(p);
+					sprite.destroy();
+					_map.remove(p);
+					removeList.add(m_game_state.getMatrix()[archiveRow.get(i)][j]);
+				}
+				m_game_state.removeRow(archiveRow.get(i));
+				_score.addScore(1);
+
 			}
 		}
 
+		if (!archiveCol.isEmpty()){
+			for (int i = 0;i<archiveCol.size();i++)
+			{
+				// remove col from hash
+				for (int j = 0;j< grid_size;j++){
+					Point p = m_game_state.getPxPy(j,archiveCol.get(i));
+					NumSprite sprite = _map.get(p);
+					sprite.destroy();
+					_map.remove(p);
+					removeList.add(m_game_state.getMatrix()[j][archiveCol.get(i)]);
+				}
+				m_game_state.removeCol(archiveCol.get(i));
+				_score.addScore(1);
+			}
+		}
+
+		if (cross_down)
+		{
+			// remove item
+
+			for (int j = 0;j<grid_size;j++)
+				for (int i = 0 ;i < grid_size;i++){
+					if (i + j == grid_size - 1){
+						Point p = m_game_state.getPxPy(i,j);
+						NumSprite sprite = _map.get(p);
+						sprite.destroy();
+						_map.remove(p);
+						removeList.add(m_game_state.getMatrix()[i][j]);
+					}
+				}
+
+
+			m_game_state.removeCrossDown();
+			_score.addScore(2);
+
+		}
+
+		if (cross_up)
+		{
+			// remove item
+			for (int j = 0;j<grid_size;j++)
+				for (int i = 0 ;i < grid_size;i++){
+					if (i == j){
+						Point p = m_game_state.getPxPy(i,j);
+						NumSprite sprite = _map.get(p);
+						sprite.destroy();
+						_map.remove(p);
+						removeList.add(m_game_state.getMatrix()[i][j]);
+					}
+
+				}
+			m_game_state.removeCrossUp();
+			_score.addScore(2);
+		}
+		fillGameState();
+		NumSprite.istouchable = true;
+	}
+
+	public void fillGameState(){
+		int value;
+		ArrayList<Integer> list = new ArrayList<>(removeList.size());
+
+
+		while (!removeList.isEmpty()){
+			list.add(removeList.remove((int)(Math.random() * removeList.size())));
+			//			Log.i(Constant.TAG, String.valueOf(list));
+
+			if (removeList.isEmpty() && Util.checkContinuous(list)){
+				removeList.addAll(list);
+				list.clear();
+			}
+		}
+		//		Log.i(Constant.TAG, String.valueOf(list));		
+		int[][]  matrix = m_game_state.getMatrix();
+		for (int i = 0;i< grid_size;i++)
+			for (int j = 0;j<grid_size;j++){
+				if (matrix[i][j] == -1) {
+					value = list.remove(0);
+					//					Log.i(Constant.TAG, String.valueOf(value));
+					matrix[i][j] = value;
+					Point p = m_game_state.getPxPy(i, j);
+					NumSprite sprite = new NumSprite(p.x, p.y, value);
+					sprite.setMatrixPosition(i,j);
+					_map.put(p, sprite);
+				}
+
+			}
+		m_game_state.setMatrix(matrix);
+	}
+	private boolean isArchive() {
+		archiveRow = m_game_state.checkRow();
+		archiveCol = m_game_state.checkCol();
+		cross_down = m_game_state.checkCrossDown();
+		cross_up = m_game_state.checkCrossUp();
+		return ((!archiveRow.isEmpty()) || (!archiveCol.isEmpty()) || cross_down || cross_up);
+	}
+	public void updateGameState(NumSprite sprite){
+		Point p3 = sprite.getMatrixPosition();
+		Point p4 = m_game_state.getZeroXY();
+		int[][] matrix = m_game_state.getMatrix();
+
+		int i = matrix[p3.x][p3.y];
+		matrix[p3.x][p3.y] = 0;
+		matrix[p4.x][p4.y] = i;
+		m_game_state.setMatrix(matrix);
+	}
+
+	public void toogle(Point p1,Point p2){
+		// Save position
+		int x1 = p1.x;
+		int y1 = p1.y;
+		int x2 = p2.x;
+		int y2 = p2.y;
+
+		NumSprite sp1 = _map.get(p1);
+		NumSprite sp2 = _map.get(p2);
+		int id1 = sp1.getResourceID();
+		int id2 = sp2.getResourceID();
+		Point p3 = sp1.getMatrixPosition();
+		Point p4 = sp2.getMatrixPosition();
+		// remove 2 sprite
+		if (_map.containsKey(p1))
+			_map.remove(p1);
+		if (_map.containsKey(p2))
+			_map.remove(p2);
+		sp1.destroy();
+		sp2.destroy();
+		// Create 2 new sprite
+		NumSprite sp1_new = new NumSprite(x1, y1, id2);
+		NumSprite sp2_new = new NumSprite(x2, y2, id1);
+		sp1_new.setMatrixPosition(p3.x, p3.y);
+		sp2_new.setMatrixPosition(p4.x, p4.y);
+		_map.put(p1, sp1_new);
+		_map.put(p2, sp2_new);
+		if (sound_on)
+			m_resource_manager.sound.playSlide();
 	}
 
 
-	private void checkState(){
-		subArrayRow = Util.checkRow(m_game_state, grid_size);
-		subArrayCol = Util.checkCol(m_game_state, grid_size);
-		cross_down = Util.checkCrossDown(m_game_state, grid_size);
-		cross_up = Util.checkCrossUp(m_game_state, grid_size);
-	}
 	private void createHUD(){
 		gameHUD = new HUD();
-		t_score_text = new Text(shift_row/2 , 6 * GameActivity.getCameraHeight()/7, m_resource_manager.font, "Score: 0123456789", new TextOptions(org.andengine.util.adt.align.HorizontalAlign.LEFT), m_vbom);
+		t_score_text = new Text(shift_row/2 , 6 * GameActivity.getCameraHeight()/7, m_resource_manager.font, "Score: 0123456789", new TextOptions(org.andengine.util.adt.align.HorizontalAlign.CENTER), m_vbom);
 		t_score_text.setSkewCenter(0, 0);    
-		t_score_text.setText("Score: 0");
-
+		t_score_text.setText("Score: \n 0");
+		t_score_text.setPosition(t_score_text.getWidth() , 6 * GameActivity.getCameraHeight()/7);
 		gameHUD.attachChild(t_score_text);
-
 		m_camera.setHUD(gameHUD);
+		_score = new Score(_level);
+		_score.setTextScore(t_score_text);
 	}
-	private void addScore(int i){
-		i_score += i;
-		t_score_text.setText("Score: " + i_score);
-	}
+
 	@Override
 	public void onBackKeyPressed() {
 		// TODO Auto-generated method stub
 		//	m_list_num.clear();
 		//	m_list_square.clear();
 		//	m_resource_manager.unloadGameTextures();
-		System.exit(0);
+		m_activity.runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				new DialogExit(m_activity).show();
+			}
+		});
 	}
-	private void createPhysics()
-	{
-		m_physical_world = new FixedStepPhysicsWorld(60, new Vector2(0, -17), false); 
-		registerUpdateHandler(m_physical_world);
-	}
+
 	@Override
 	public SceneType getSceneType() {
 		// TODO Auto-generated method stub
@@ -404,6 +541,42 @@ public class GameScene extends BaseScene {
 	{
 		m_camera.setHUD(null);
 		m_camera.setCenter(GameActivity.getCameraWidth()/2, GameActivity.getCameraHeight()/2);
+	}
+	public void timeOut() {
+		// TODO Auto-generated method stub
+		m_activity.runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				new DialogGameOver(m_activity).show();
+			}
+		});
+	}
+	public void setLevel(int level) {
+		// TODO Auto-generated method stub
+		if (_level == level) {
+			resumeGame();
+			NumSprite.istouchable = true;
+			return;
+		}
+		_level = level;
+		removeMap();
+		switch (_level) {
+		case 1:
+			grid_size = 4;			
+			break;
+		case 2:
+			grid_size = 5;			
+			break;
+		case 3:
+			grid_size = 6;			
+			break;
+		default:
+			break;
+		}
+
+		levelChange();
 	}
 
 

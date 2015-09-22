@@ -4,6 +4,7 @@ import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+import org.andengine.ui.activity.BaseGameActivity;
 
 import android.app.Activity;
 import com.pulsardev.candycrush.SceneManager.SceneType;
@@ -14,7 +15,7 @@ public abstract class BaseScene extends Scene {
 	//---------------------------------------------
 
 	protected Engine m_engine;
-	protected Activity m_activity;
+	protected BaseGameActivity m_activity;
 	protected ResourcesManager m_resource_manager;
 	protected VertexBufferObjectManager m_vbom;
 	protected Camera m_camera;

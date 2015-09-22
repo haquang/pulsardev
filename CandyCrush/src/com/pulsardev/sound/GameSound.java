@@ -7,31 +7,34 @@ import com.pulsardev.candycrush.ResourcesManager;
 
 public class GameSound
 {
-  Sound sndCatch;
-  Sound sndFail;
-
+  Sound sndSlide;
+  Sound sndArchive;
   public void loadSound()
   {
     try
     {
-      this.sndCatch = SoundFactory.createSoundFromAsset(ResourcesManager.getInstance().m_engine.getSoundManager(), ResourcesManager.getInstance().m_activity, "sfx/catch.mp3");
-      this.sndFail = SoundFactory.createSoundFromAsset(ResourcesManager.getInstance().m_engine.getSoundManager(), ResourcesManager.getInstance().m_activity, "sfx/fail.mp3");
+      sndSlide = SoundFactory.createSoundFromAsset(ResourcesManager.getInstance().m_engine.getSoundManager(), ResourcesManager.getInstance().m_activity, "sfx/slide.mp3");
+      sndArchive = SoundFactory.createSoundFromAsset(ResourcesManager.getInstance().m_engine.getSoundManager(), ResourcesManager.getInstance().m_activity, "sfx/archive.mp3");
+      sndSlide.setVolume(0.25f);
+      sndArchive.setVolume(1.0f);
       return;
     }
     catch (Exception localException)
     {
       throw new RuntimeException("Error while loading sounds", localException);
     }
+    
   }
 
-  public void playBad()
+  public void playSlide()
   {
-    this.sndFail.play();
+    sndSlide.play();
+  }
+  
+  public void playArchive()
+  {
+    sndArchive.play();
   }
 
-  public void playGood()
-  {
-    this.sndCatch.play();
-  }
 }
 
