@@ -16,15 +16,30 @@ public class Util
 		return paramInt1 + (int)(Math.random() * (1 + (paramInt2 - paramInt1)));
 	}
 
-	public static boolean checkContinuous(ArrayList<Integer> matrix){
+	public static boolean checkIncreaseContinuous(ArrayList<Integer> matrix){
 		if (2 == matrix.size())
 			return (1 == matrix.get(1) - matrix.get(0));
 		else {
 			ArrayList<Integer> arr = new ArrayList<Integer>(matrix);
 			arr.remove(0);
 			int val = matrix.get(0);
-			return (1 == matrix.get(1) -  val) && checkContinuous(arr);
+			return (1 == matrix.get(1) -  val) && checkIncreaseContinuous(arr);
 		}
+	}
+	
+	public static boolean checkDecreaseContinuous(ArrayList<Integer> matrix){
+		if (2 == matrix.size())
+			return (1 == matrix.get(0) - matrix.get(1));
+		else {
+			ArrayList<Integer> arr = new ArrayList<Integer>(matrix);
+			arr.remove(0);
+			int val = matrix.get(0);
+			return (1 == val - matrix.get(1)) && checkDecreaseContinuous(arr);
+		}
+	}
+	
+	public static boolean checkContinuous(ArrayList<Integer> arr){
+		return (checkDecreaseContinuous(arr) || (checkIncreaseContinuous(arr)));
 	}
 	public static ArrayList<Integer> checkRow(ArrayList<Integer> matrix,int size){
 		ArrayList<Integer> result = new ArrayList<Integer>();

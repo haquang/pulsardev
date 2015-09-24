@@ -68,7 +68,7 @@ public class GameScene extends BaseScene {
 	private void createProgressBar() {
 		// TODO Auto-generated method stub
 		m_progress_bar = new ProgressBar(GameActivity.getCameraWidth()/2 , (int) (0.95*GameActivity.getCameraHeight()), m_resource_manager.m_progress_region, m_vbom,square_size * grid_size);
-		m_progress_bar.setTotalTime(_level * 120);
+		m_progress_bar.setTotalTime(_level * 300);
 		m_progress_bar.start();
 	}
 	private void createGame() {
@@ -85,7 +85,6 @@ public class GameScene extends BaseScene {
 					p = m_game_state.getPxPy(i,j);
 					NumSprite item = new NumSprite(p.x, p.y, m_game_state.getMatrix()[i][j]);
 					item.setMatrixPosition(i, j);
-					Log.i(Constant.TAG, "MAP : " + String.valueOf(_map.size()));
 					_map.put(p, item);
 				}
 			NumSprite.m_game_state = m_game_state;
@@ -314,7 +313,7 @@ public class GameScene extends BaseScene {
 	public void levelChange() {
 
 		initSize();
-		m_progress_bar.setTotalTime(_level * 120);
+		m_progress_bar.setTotalTime(_level * 300);
 		_score.setLevel(_level);
 		_score.reset();
 		removeList.clear();
@@ -334,14 +333,19 @@ public class GameScene extends BaseScene {
 		toogle(p0, p1);
 		// update game_state
 		updateGameState(sprite);
+		m_game_state.showMatrix2D();
 		// Check if archive target
 		if (isArchive()){
-			processArchivement();
 			if (sound_on)
 				m_resource_manager.sound.playArchive();
+			m_progress_bar.pause();
+			processArchivement();
+			
 		} else {
 			NumSprite.istouchable = true;
 		}
+		return;
+
 	}
 
 	private void processArchivement() {
@@ -353,7 +357,7 @@ public class GameScene extends BaseScene {
 				for (int j = 0;j< grid_size;j++){
 					Point p = m_game_state.getPxPy(archiveRow.get(i),j);
 					NumSprite sprite = _map.get(p);
-					sprite.destroy();
+					sprite.rotateSprite();
 					_map.remove(p);
 					removeList.add(m_game_state.getMatrix()[archiveRow.get(i)][j]);
 				}
@@ -370,7 +374,7 @@ public class GameScene extends BaseScene {
 				for (int j = 0;j< grid_size;j++){
 					Point p = m_game_state.getPxPy(j,archiveCol.get(i));
 					NumSprite sprite = _map.get(p);
-					sprite.destroy();
+					sprite.rotateSprite();
 					_map.remove(p);
 					removeList.add(m_game_state.getMatrix()[j][archiveCol.get(i)]);
 				}
@@ -388,7 +392,7 @@ public class GameScene extends BaseScene {
 					if (i + j == grid_size - 1){
 						Point p = m_game_state.getPxPy(i,j);
 						NumSprite sprite = _map.get(p);
-						sprite.destroy();
+						sprite.rotateSprite();
 						_map.remove(p);
 						removeList.add(m_game_state.getMatrix()[i][j]);
 					}
@@ -408,7 +412,7 @@ public class GameScene extends BaseScene {
 					if (i == j){
 						Point p = m_game_state.getPxPy(i,j);
 						NumSprite sprite = _map.get(p);
-						sprite.destroy();
+						sprite.rotateSprite();
 						_map.remove(p);
 						removeList.add(m_game_state.getMatrix()[i][j]);
 					}
@@ -417,8 +421,21 @@ public class GameScene extends BaseScene {
 			m_game_state.removeCrossUp();
 			_score.addScore(2);
 		}
-		fillGameState();
-		NumSprite.istouchable = true;
+		boolean wait = false;
+		new Thread(new Runnable() {
+		    public void run() {
+		        /* Do things */
+		        try {
+					Thread.sleep(185);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} /* Wait 1000 milliseconds */
+				fillGameState();
+				m_progress_bar.resume();
+		    }
+		}).start();
+
 	}
 
 	public void fillGameState(){
@@ -451,6 +468,7 @@ public class GameScene extends BaseScene {
 
 			}
 		m_game_state.setMatrix(matrix);
+		NumSprite.istouchable = true;
 	}
 	private boolean isArchive() {
 		archiveRow = m_game_state.checkRow();

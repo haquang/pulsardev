@@ -26,10 +26,10 @@ public class Score {
 				_score += 1 * bonus;
 				break;
 			case 2:
-				_score += 5  * bonus;
+				_score += 2  * bonus;
 				break;
 			case 3:
-				_score += 10  * bonus;
+				_score += 3  * bonus;
 				break;
 			default:
 				break;

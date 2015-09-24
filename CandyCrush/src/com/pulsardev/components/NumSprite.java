@@ -31,6 +31,8 @@ public class NumSprite{
 	// Sprite to display
 	Sprite m_sprite;
 
+	float _angle = 0;
+	public static boolean _rotate_finish = false;
 	// Size
 	public static int _size;
 	// Texture region
@@ -69,12 +71,9 @@ public class NumSprite{
 		switch (event.getAction()){
 		case TouchEvent.ACTION_DOWN:
 			if (istouchable){
-				istouchable = false;
 				if (checkMoveAble()){
 					m_scene.onTouchMovable(this);
-				} else {
-					istouchable = true;
-				}
+				} 
 			}
 			break;
 		default:
@@ -110,28 +109,57 @@ public class NumSprite{
 		return m_sprite;
 	}
 	private boolean checkMoveAble() {
-
+		
 	//	m_game_state.showMatrix2D();
 		Point p0 = m_game_state.getZeroXY();
+		if ((_row == p0.x) && (_col == p0.y))
+			return false;
 		if (((Math.abs(_row - p0.x) <= 1) && (_col == p0.y)) || ((Math.abs(_col - p0.y) <= 1) && (_row == p0.x)))
 			return true;
 		else  
 			return false;
 
 	}	
+	
+	public void rotateSprite(){
+		_angle = 0;
+		_rotate_finish = false;
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				while (_angle < 90){
+					try {
+						Thread.sleep(10);
+						_angle += 5;
+						m_sprite.setRotation(_angle);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				m_sprite.setVisible(false);
+			}
+		}).start();
+	}
+	public boolean getRotationState(){
+		return _rotate_finish;
+	}
 	public void destroy(){
 		m_activity.runOnUpdateThread(new Runnable() {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				m_scene.unregisterTouchArea(m_sprite);
-				m_scene.detachChild(m_sprite);
-				m_sprite.dispose();
-				//m_sprite.detachSelf();
-
+				if (m_sprite != null){
+					m_scene.unregisterTouchArea(m_sprite);
+					//m_scene.detachChild(m_sprite);
+					m_sprite.detachSelf();
+					if (!m_sprite.isDisposed())
+						m_sprite.dispose();
+				}
 			}
-		});
-		
+		});	
 	}
 
 }
