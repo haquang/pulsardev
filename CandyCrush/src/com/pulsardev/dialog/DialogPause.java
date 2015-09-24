@@ -23,11 +23,8 @@ public class DialogPause extends Dialog
     UtilDialog.iniDialog(this);
     this.activity = ((Activity)context);
     setContentView(R.layout.dialog_pause);
-    Util.resizeDialog(findViewById(R.id.dialogPauseLayout));
+  //  Util.resizeDialog(findViewById(R.id.dialogPauseLayout));
     ((Button)findViewById(R.id.button_tryagain)).setOnClickListener(this);
-//    ((Button)findViewById(R.id.button_menu)).setOnClickListener(this);
-//    ((Button)findViewById(R.id.button_setting)).setOnClickListener(this);
-//    ((Button)findViewById(R.id.button_continue)).setOnClickListener(this);
     
   }
 

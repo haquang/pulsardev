@@ -4,4 +4,16 @@
     <dimen name="activity_horizontal_margin">1dp</dimen>
     <dimen name="activity_vertical_margin">1dp</dimen>
 
+    <dimen name="dim_5">5dp</dimen>
+    <dimen name="dim_10">10dp</dimen>
+    <dimen name="dim_16">16dp</dimen>
+    <dimen name="dim_20">20dp</dimen>
+    <dimen name="dim_30">30dp</dimen>
+    <dimen name="dim_40">40dp</dimen>
+    <dimen name="dim_50">50dp</dimen>
+    <dimen name="dim_60">60dp</dimen>
+    
+    <dimen name="dialog_button_text_normal">60sp</dimen>
+    <dimen name="dialog_button_text_large">75sp</dimen>
+    <dimen name="dialog_button_text_small">45sp</dimen>
 </resources>

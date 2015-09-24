@@ -6,6 +6,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import com.pulsardev.candycrush.GameScene;
 import com.pulsardev.candycrush.R;
@@ -18,8 +19,8 @@ public class DialogExit extends Dialog
 {
   Activity m_activity;
   public static GameScene m_scene;
-  Button no;
-  Button yes;
+  ImageButton no;
+  ImageButton yes;
 
   public DialogExit(Context paramContext)
   {
@@ -27,9 +28,9 @@ public class DialogExit extends Dialog
     UtilDialog.iniDialog(this);
     this.m_activity = ((Activity)paramContext);
     setContentView(R.layout.dialog_exit);
-    Util.resizeDialog(findViewById(R.id.dialogExitLayout));
-    yes = ((Button)findViewById(R.id.button_yes));
-    no = ((Button)findViewById(R.id.button_no));
+  //  Util.resizeDialog(findViewById(R.id.dialogExitLayout));
+    yes = ((ImageButton)findViewById(R.id.button_yes));
+    no = ((ImageButton)findViewById(R.id.button_no));
     yes.setOnClickListener(this);
     no.setOnClickListener(this);
   }

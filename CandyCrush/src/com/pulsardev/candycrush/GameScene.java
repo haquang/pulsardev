@@ -12,6 +12,7 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.util.adt.color.Color;
 import com.pulsardev.candycrush.GameScene;
 import com.pulsardev.candycrush.SceneManager.SceneType;
+import com.pulsardev.components.Highscore;
 import com.pulsardev.components.Matrix2D;
 import com.pulsardev.components.NumSprite;
 import com.pulsardev.components.ProgressBar;
@@ -19,7 +20,9 @@ import com.pulsardev.components.Score;
 import com.pulsardev.config.Constant;
 import com.pulsardev.dialog.DialogExit;
 import com.pulsardev.dialog.DialogGameOver;
+import com.pulsardev.dialog.DialogHighScore;
 import com.pulsardev.dialog.DialogLevel;
+import com.pulsardev.dialog.DialogName;
 import com.pulsardev.dialog.DialogPause;
 import com.pulsardev.util.Util;
 
@@ -37,8 +40,9 @@ public class GameScene extends BaseScene {
 	private ButtonSprite btn_settings;
 	private ButtonSprite btn_sound_on;
 	private ButtonSprite btn_sound_off;
-	private ButtonSprite btn_pause;
+	//	private ButtonSprite btn_pause;
 	private ProgressBar m_progress_bar;
+	private Highscore m_high_score;
 
 	HashMap<Point, NumSprite> _map;
 	int shift_row = 0;
@@ -68,7 +72,7 @@ public class GameScene extends BaseScene {
 	private void createProgressBar() {
 		// TODO Auto-generated method stub
 		m_progress_bar = new ProgressBar(GameActivity.getCameraWidth()/2 , (int) (0.95*GameActivity.getCameraHeight()), m_resource_manager.m_progress_region, m_vbom,square_size * grid_size);
-		m_progress_bar.setTotalTime(_level * 300);
+		m_progress_bar.setTotalTime(_level * 60);
 		m_progress_bar.start();
 	}
 	private void createGame() {
@@ -76,7 +80,7 @@ public class GameScene extends BaseScene {
 
 		// Create random matrix
 		m_game_state.createRandomMatrix();
-		m_game_state.showMatrix2D();
+		//	m_game_state.showMatrix2D();
 
 		// Create NumItem & add to Hash table
 		try {
@@ -107,12 +111,27 @@ public class GameScene extends BaseScene {
 		DialogGameOver.m_scene = this;
 		DialogPause.m_scene = this;
 		DialogLevel.m_scene = this;
+		DialogName.m_scene = this;
+		DialogHighScore.m_scene = this;
 		// Map
 		_map = new HashMap<Point, NumSprite>();
 		removeList = new ArrayList<Integer>();
 		ProgressBar._scene = this;
-
 		m_game_state = new Matrix2D(grid_size);
+
+		// High score
+		m_high_score = new Highscore(this.m_activity.getBaseContext());
+		//		m_high_score.clear();
+		//		m_high_score.addScore("Quang", 1);
+		//		m_high_score.addScore("Quang1",3);
+		//		m_high_score.addScore("Quang2",2);
+		//		m_high_score.addScore("Quang3",5);
+		//		m_high_score.addScore("Quang4",4);
+		//
+		for (int i = 0;i< Constant.HIGHT_SCORE_SIZE;i++){
+			Log.i(Constant.TAG, String.valueOf(m_high_score.getName(i)) + String.valueOf(m_high_score.getScore(i)));
+		}
+
 	}
 	private void initSize(){
 		game_zone_height = (int) (0.9 * GameActivity.getCameraHeight());
@@ -194,7 +213,9 @@ public class GameScene extends BaseScene {
 			@Override
 			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				pauseGame();
+
 				if(pTouchEvent.isActionDown()) {
+					//			
 					m_activity.runOnUiThread(new Runnable()
 					{
 						@Override
@@ -262,6 +283,8 @@ public class GameScene extends BaseScene {
 			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				if(pTouchEvent.isActionDown()) {
 					restartGame();
+
+
 				}
 				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
 			}
@@ -272,6 +295,22 @@ public class GameScene extends BaseScene {
 		attachChild(btn_restart);
 	}
 
+	public void manualScreen(){
+		SceneManager.getInstance().loadManualScene(m_engine);
+	}
+
+	public void highScore(){
+		m_activity.runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				DialogHighScore highScore = new DialogHighScore(m_activity);
+				highScore.setHighScore(m_high_score);
+				highScore.show();
+			}
+		});
+	}
 	public void pauseGame(){
 		m_progress_bar.pause();
 		NumSprite.istouchable = false;
@@ -313,7 +352,7 @@ public class GameScene extends BaseScene {
 	public void levelChange() {
 
 		initSize();
-		m_progress_bar.setTotalTime(_level * 300);
+		m_progress_bar.setTotalTime(_level * 60);
 		_score.setLevel(_level);
 		_score.reset();
 		removeList.clear();
@@ -333,14 +372,14 @@ public class GameScene extends BaseScene {
 		toogle(p0, p1);
 		// update game_state
 		updateGameState(sprite);
-		m_game_state.showMatrix2D();
+		//	m_game_state.showMatrix2D();
 		// Check if archive target
 		if (isArchive()){
 			if (sound_on)
 				m_resource_manager.sound.playArchive();
 			m_progress_bar.pause();
 			processArchivement();
-			
+
 		} else {
 			NumSprite.istouchable = true;
 		}
@@ -423,24 +462,24 @@ public class GameScene extends BaseScene {
 		}
 		boolean wait = false;
 		new Thread(new Runnable() {
-		    public void run() {
-		        /* Do things */
-		        try {
-					Thread.sleep(185);
+			public void run() {
+				/* Do things */
+				try {
+					Thread.sleep(200);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} /* Wait 1000 milliseconds */
 				fillGameState();
 				m_progress_bar.resume();
-		    }
+			}
 		}).start();
 
 	}
 
 	public void fillGameState(){
 		int value;
-		ArrayList<Integer> list = new ArrayList<>(removeList.size());
+		ArrayList<Integer> list = new ArrayList<Integer>(removeList.size());
 
 
 		while (!removeList.isEmpty()){
@@ -559,9 +598,40 @@ public class GameScene extends BaseScene {
 	{
 		m_camera.setHUD(null);
 		m_camera.setCenter(GameActivity.getCameraWidth()/2, GameActivity.getCameraHeight()/2);
+		removeMap();
+		removeList.clear();
+		m_progress_bar.stop();	
+		this.detachSelf();
+		this.dispose();
 	}
 	public void timeOut() {
 		// TODO Auto-generated method stub
+		// Check if high score & display high score
+		if (m_high_score.inHighscore(_score.getScore())){
+			//			Log.i(Constant.TAG, "High Score");
+			// 			Display InputName dialog
+			m_activity.runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					new DialogName(m_activity).show();
+				}
+			});
+		} else {
+			displayGameOver();
+		}
+
+
+	}
+
+	public void updateHighScore(String name){
+		Log.i(Constant.TAG, name);
+		m_high_score.addScore(name, _score.getScore());
+	}
+
+	public void displayGameOver() {
+		// Display Game Over
 		m_activity.runOnUiThread(new Runnable()
 		{
 			@Override
@@ -571,6 +641,7 @@ public class GameScene extends BaseScene {
 			}
 		});
 	}
+
 	public void setLevel(int level) {
 		// TODO Auto-generated method stub
 		if (_level == level) {

@@ -9,7 +9,6 @@ import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.WakeLockOptions;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
-import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.ui.activity.BaseGameActivity;
 import org.andengine.util.debug.Debug;
@@ -21,7 +20,7 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.KeyEvent;
 
-public class GameActivity extends BaseGameActivity {
+public class GameActivity extends BaseGameActivity  {
 	private Camera m_camera;
 	private ResourcesManager m_resource_manager;
 	private static int _camera_height = Constant.CAMERA_HEIGHT;

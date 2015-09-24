@@ -41,17 +41,26 @@ public class ResourcesManager {
 	public ITextureRegion m_options_region;
 	public ITextureRegion m_exit_region;
 
-	public ITextureRegion m_game_background_region;
-	private BuildableBitmapTextureAtlas m_game_texture_atlas;
-
 	public BitmapTextureAtlas[] m_number_atlas;
 	public TextureRegion[] m_number_region;
 
 	public BitmapTextureAtlas[] m_button_atlas;
 	public TextureRegion[] m_button_region;
 
+	public ITextureRegion[] m_manual_region;
+	private BitmapTextureAtlas[] m_manual_texture_atlas;
+	
 	public BitmapTextureAtlas m_progress_atlas;
 	public TextureRegion m_progress_region;
+	
+	public BitmapTextureAtlas m_next_button_atlas;
+	public TextureRegion m_next_button_region;
+	
+	public BitmapTextureAtlas m_back_button_atlas;
+	public TextureRegion m_back_button_region;
+	
+	public BitmapTextureAtlas m_return_button_atlas;
+	public TextureRegion m_return_button_region;
 
 	
 	GameSound sound;
@@ -74,8 +83,29 @@ public class ResourcesManager {
 
 	public void unloadGameTextures()
 	{
-		m_game_texture_atlas.unload();
+		/*
+		 * Unload number sprite
+		 */
 
+		for (int i = 0; i < Constant.MAX_ITEM_NUM; i++) {
+			m_number_atlas[i].unload();
+			m_number_region[i] = null;
+		}
+		
+		/*
+		 * Unload button sprite
+		 * 
+		 */
+		for (int i = 0; i < Constant.MAX_BUTTON_NUM; i++) {
+			m_button_atlas[i].unload();
+			m_button_region[i] = null;
+		}
+		/*
+		 * Load progress bar
+		 */
+		
+		m_progress_atlas.unload();
+		m_progress_region = null;
 	}
 
 
@@ -136,6 +166,55 @@ public class ResourcesManager {
 		m_splash_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(m_splash_texture_atlas, m_activity, "splash.jpg", 0, 0);
 		m_splash_texture_atlas.load();
 	}
+	
+	public void loadManualScreenResources(){
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
+		
+		m_manual_texture_atlas = new BitmapTextureAtlas[Constant.MANUAL_MAX];
+		m_manual_region = new TextureRegion[Constant.MANUAL_MAX];
+		
+		for (int i = 0; i < Constant.MANUAL_MAX; i++) {
+			m_manual_texture_atlas[i] = new BitmapTextureAtlas(m_engine.getTextureManager(), 1024, 512,TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+			m_manual_region[i] = BitmapTextureAtlasTextureRegionFactory.createFromAsset(m_manual_texture_atlas[i], m_activity,Constant.MANUAL_NAME[i], 0, 0);
+			m_engine.getTextureManager().loadTexture(m_manual_texture_atlas[i]);
+		}
+		
+		m_next_button_atlas = new BitmapTextureAtlas(m_engine.getTextureManager(), 256, 128, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		m_next_button_region = BitmapTextureAtlasTextureRegionFactory .createFromAsset(m_next_button_atlas, m_activity, "Next.png", 0, 0);
+		m_engine.getTextureManager().loadTexture(m_next_button_atlas);
+		
+		m_back_button_atlas = new BitmapTextureAtlas(m_engine.getTextureManager(), 256, 128, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		m_back_button_region = BitmapTextureAtlasTextureRegionFactory .createFromAsset(m_back_button_atlas, m_activity, "Back.png", 0, 0);
+		m_engine.getTextureManager().loadTexture(m_back_button_atlas);
+		
+		
+		m_return_button_atlas = new BitmapTextureAtlas(m_engine.getTextureManager(), 256, 128, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		m_return_button_region = BitmapTextureAtlasTextureRegionFactory .createFromAsset(m_return_button_atlas, m_activity, "Return.png", 0, 0);
+		m_engine.getTextureManager().loadTexture(m_return_button_atlas);
+		
+	}
+	
+	public void unloadManualScreenResources() {
+		// TODO Auto-generated method stub
+		for (int i = 0; i < Constant.MANUAL_MAX; i++)
+		{
+			m_manual_texture_atlas[i].unload();
+			m_manual_region[i] = null;
+		}
+		
+		m_next_button_atlas.unload();
+		m_next_button_region = null;
+		
+		m_back_button_atlas.unload();
+		m_back_button_region = null;
+		
+		
+		m_return_button_atlas.unload();
+		m_return_button_region = null;
+		
+		
+		
+	}
 
 	public void unloadSplashScreen()
 	{
@@ -169,4 +248,6 @@ public class ResourcesManager {
 	{
 		return INSTANCE;
 	}
+
+
 }

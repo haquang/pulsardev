@@ -5,6 +5,10 @@ import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.ui.IGameInterface.OnCreateSceneCallback;
 
+import com.pulsardev.config.Constant;
+
+import android.util.Log;
+
 public class SceneManager {
 	//---------------------------------------------
 	// SCENES
@@ -12,6 +16,7 @@ public class SceneManager {
 
 	private BaseScene m_splash_scene;
 	private BaseScene m_game_scene;
+	private BaseScene m_manual_scene;
 
 	//---------------------------------------------
 	// VARIABLES
@@ -29,9 +34,8 @@ public class SceneManager {
 	public enum SceneType
 	{
 		SCENE_SPLASH,
-		SCENE_MENU,
 		SCENE_GAME,
-		SCENE_LOADING,
+		SCENE_MANUAL
 	}
 
 	//---------------------------------------------
@@ -51,6 +55,20 @@ public class SceneManager {
 		m_splash_scene.disposeScene();
 		m_splash_scene = null;
 	}
+	
+	private void disposeManualScene()
+	{
+		ResourcesManager.getInstance().unloadManualScreenResources();
+		m_manual_scene.disposeScene();
+		m_manual_scene = null;
+	}
+	
+	private void disposeGameScene(){
+		ResourcesManager.getInstance().unloadGameTextures();
+		m_game_scene.disposeScene();
+		m_game_scene = null;
+	}
+	
 	public void setScene(BaseScene scene)
 	{
 		m_engine.setScene(scene);
@@ -58,7 +76,13 @@ public class SceneManager {
 		m_current_scene_type = scene.getSceneType();
 	}
 	public void loadGameScene(final Engine mEngine) {
-		disposeSplashScene();
+		if (SceneType.SCENE_SPLASH == getCurrentSceneType())
+			disposeSplashScene();
+		else if (SceneType.SCENE_MANUAL == getCurrentSceneType()){
+			disposeManualScene();
+		} else {
+			return;
+		}
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() 
 		{
 			public void onTimePassed(final TimerHandler pTimerHandler) 
@@ -71,16 +95,32 @@ public class SceneManager {
 		}));
 	}
 	
+	public void loadManualScene(final Engine mEngine){
+		disposeGameScene();
+		mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() 
+		{
+			public void onTimePassed(final TimerHandler pTimerHandler) 
+			{
+				mEngine.unregisterUpdateHandler(pTimerHandler);
+				ResourcesManager.getInstance().loadManualScreenResources();
+				m_manual_scene = new ManualScene();
+				setScene(m_manual_scene);
+			}
+		}));
+	}
+	
 	public void setScene(SceneType sceneType)
 	{
 		switch (sceneType)
 		{
-		
 		case SCENE_GAME:
 			setScene(m_game_scene);
 			break;
 		case SCENE_SPLASH:
 			setScene(m_splash_scene);
+			break;
+		case SCENE_MANUAL:
+			setScene(m_manual_scene);
 			break;
 		default:
 			break;

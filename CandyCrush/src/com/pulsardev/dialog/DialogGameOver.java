@@ -23,7 +23,7 @@ implements View.OnClickListener
 		super(paramContext);
 		UtilDialog.iniDialog(this);
 		setContentView(R.layout.dialog_gameover);
-		Util.resizeDialog(findViewById(R.id.dialogGameOverLayout));
+	//	Util.resizeDialog(findViewById(R.id.dialogGameOverLayout));
 
 		((Button)findViewById(R.id.button_tryagain)).setOnClickListener(this);
 	}

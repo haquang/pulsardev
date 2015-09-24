@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.pulsardev.candycrush.GameScene;
 import com.pulsardev.candycrush.R;
@@ -23,10 +24,12 @@ public class DialogLevel extends Dialog
     UtilDialog.iniDialog(this);
     this.activity = ((Activity)context);
     setContentView(R.layout.dialog_level);
-    Util.resizeDialog(findViewById(R.id.dialogLevelLayout));
-    ((Button)findViewById(R.id.button_level1)).setOnClickListener(this);
-    ((Button)findViewById(R.id.button_level2)).setOnClickListener(this);
-    ((Button)findViewById(R.id.button_level3)).setOnClickListener(this);
+   // Util.resizeDialog(findViewById(R.id.dialogLevelLayout));
+    ((ImageButton)findViewById(R.id.button_level1)).setOnClickListener(this);
+    ((ImageButton)findViewById(R.id.button_level2)).setOnClickListener(this);
+    ((ImageButton)findViewById(R.id.button_level3)).setOnClickListener(this);
+    ((ImageButton)findViewById(R.id.button_highscore)).setOnClickListener(this);
+    ((ImageButton)findViewById(R.id.button_instruction)).setOnClickListener(this);
     
   }
 
@@ -38,14 +41,21 @@ public void onClick(View view)
 			case R.id.button_level1:
 				m_scene.setLevel(1);
 				this.dismiss();
-				break;
-				
+				break;			
 			case R.id.button_level2:
 				m_scene.setLevel(2);
 				this.dismiss();
 				break;
 			case R.id.button_level3:
 				m_scene.setLevel(3);
+				this.dismiss();
+				break;
+			case R.id.button_highscore:
+				m_scene.highScore();
+				this.dismiss();
+				break;
+			case R.id.button_instruction:
+				m_scene.manualScreen();
 				this.dismiss();
 				break;
 

@@ -20,7 +20,7 @@ public class Matrix2D {
 	public void createRandomMatrix() {
 		try {
 			int N = _matrix_size*_matrix_size - 1;
-			ArrayList<Integer> list = new ArrayList<>(N); // row * col - 1
+			ArrayList<Integer> list = new ArrayList<Integer>(N); // row * col - 1
 			for (int i = 0; i <= N; i++){
 				list.add(i);
 			}

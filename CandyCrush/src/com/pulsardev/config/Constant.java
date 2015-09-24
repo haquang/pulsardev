@@ -83,4 +83,19 @@ public class Constant {
     public static int WIDTH_SQUARE = 68, HEIGHT_SQUARE = 68;
     public static final int GRID_SIZE_DEFAULT = 4; // 6x6 square grid
     public static final int GRID_MAX = 6; // 6x6 square grid
+    
+    // For high score
+    public static int HIGHT_SCORE_SIZE = 5;
+    
+    // For manual
+    
+    public static final int MANUAL_MAX = 3;
+    public static final String[] MANUAL_NAME = new String[]{
+    	"manual1.png","manual2.png","manual3.png"	
+    };
+    
+    public static final int MANUAL_ZERO = 0;
+    public static final int MANUAL_ONE = 1;
+    public static final int MANUAL_TWO = 2;
+    
 }
