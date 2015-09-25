@@ -105,7 +105,7 @@ public class GameScene extends BaseScene {
 		NumSprite.m_activity = this.m_activity;
 		NumSprite.m_texture_region = m_resource_manager.m_number_region;
 		NumSprite.m_vbom = m_resource_manager.m_vbom;
-
+		NumSprite.istouchable =  true;
 		// Dialog
 		DialogExit.m_scene = this;
 		DialogGameOver.m_scene = this;
@@ -122,11 +122,11 @@ public class GameScene extends BaseScene {
 		// High score
 		m_high_score = new Highscore(this.m_activity.getBaseContext());
 		//		m_high_score.clear();
-		//		m_high_score.addScore("Quang", 1);
-		//		m_high_score.addScore("Quang1",3);
-		//		m_high_score.addScore("Quang2",2);
-		//		m_high_score.addScore("Quang3",5);
-		//		m_high_score.addScore("Quang4",4);
+				m_high_score.addScore("Quang", 1);
+				m_high_score.addScore("Quang1",3);
+				m_high_score.addScore("Quang2",2);
+				m_high_score.addScore("Quang3",5);
+				m_high_score.addScore("Quang4",4);
 		//
 		for (int i = 0;i< Constant.HIGHT_SCORE_SIZE;i++){
 			Log.i(Constant.TAG, String.valueOf(m_high_score.getName(i)) + String.valueOf(m_high_score.getScore(i)));
@@ -213,7 +213,6 @@ public class GameScene extends BaseScene {
 			@Override
 			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				pauseGame();
-
 				if(pTouchEvent.isActionDown()) {
 					//			
 					m_activity.runOnUiThread(new Runnable()

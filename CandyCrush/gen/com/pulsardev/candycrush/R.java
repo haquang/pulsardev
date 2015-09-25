@@ -37,6 +37,7 @@ public final class R {
         public static final int dialog_button_text_large=0x7f06000b;
         public static final int dialog_button_text_normal=0x7f06000a;
         public static final int dialog_button_text_small=0x7f06000c;
+        public static final int dialog_button_text_xsmall=0x7f06000d;
         public static final int dim_10=0x7f060003;
         public static final int dim_16=0x7f060004;
         public static final int dim_20=0x7f060005;
@@ -45,6 +46,7 @@ public final class R {
         public static final int dim_5=0x7f060002;
         public static final int dim_50=0x7f060008;
         public static final int dim_60=0x7f060009;
+        public static final int txt_highscore=0x7f06000e;
     }
     public static final class drawable {
         public static final int bg=0x7f020000;
@@ -63,47 +65,41 @@ public final class R {
         public static final int btn_tryagain=0x7f02000d;
         public static final int exitgame=0x7f02000e;
         public static final int gameover=0x7f02000f;
-        public static final int ic_launcher=0x7f020010;
-        public static final int icon_time=0x7f020011;
-        public static final int level=0x7f020012;
-        public static final int pause=0x7f020013;
-        public static final int paused=0x7f020014;
+        public static final int highscore=0x7f020010;
+        public static final int ic_launcher=0x7f020011;
+        public static final int icon_time=0x7f020012;
+        public static final int level=0x7f020013;
+        public static final int new_highscore=0x7f020014;
+        public static final int pause=0x7f020015;
+        public static final int paused=0x7f020016;
     }
     public static final class id {
-        public static final int button_finish=0x7f0a0013;
-        public static final int button_highscore=0x7f0a001a;
-        public static final int button_instruction=0x7f0a0019;
-        public static final int button_level1=0x7f0a0016;
-        public static final int button_level2=0x7f0a0017;
-        public static final int button_level3=0x7f0a0018;
-        public static final int button_name_OK=0x7f0a0020;
-        public static final int button_name_cancel=0x7f0a001f;
+        public static final int button_finish=0x7f0a000a;
+        public static final int button_highscore=0x7f0a0011;
+        public static final int button_instruction=0x7f0a0010;
+        public static final int button_level1=0x7f0a000d;
+        public static final int button_level2=0x7f0a000e;
+        public static final int button_level3=0x7f0a000f;
+        public static final int button_name_OK=0x7f0a0014;
+        public static final int button_name_cancel=0x7f0a0015;
         public static final int button_no=0x7f0a0004;
+        public static final int button_resume=0x7f0a0017;
         public static final int button_tryagain=0x7f0a0007;
         public static final int button_yes=0x7f0a0003;
         public static final int dialogExitLayout=0x7f0a0000;
         public static final int dialogGameOverLayout=0x7f0a0005;
         public static final int dialogHighScoreLayout=0x7f0a0008;
-        public static final int dialogLevelLayout=0x7f0a0014;
-        public static final int dialogNameLayout=0x7f0a001b;
-        public static final int dialogPauseLayout=0x7f0a0021;
-        public static final int imageView1=0x7f0a0015;
+        public static final int dialogLevelLayout=0x7f0a000b;
+        public static final int dialogNameLayout=0x7f0a0012;
+        public static final int dialogPauseLayout=0x7f0a0016;
         public static final int img_exit=0x7f0a0001;
-        public static final int img_paused=0x7f0a0006;
-        public static final int linearLayout1=0x7f0a001c;
+        public static final int img_highscore=0x7f0a0006;
+        public static final int img_new_highscore=0x7f0a000c;
         public static final int linearLayout2=0x7f0a0002;
-        public static final int textView=0x7f0a001d;
-        public static final int txt_name=0x7f0a001e;
-        public static final int txt_name1=0x7f0a0009;
-        public static final int txt_name2=0x7f0a000b;
-        public static final int txt_name3=0x7f0a000d;
-        public static final int txt_name4=0x7f0a000f;
-        public static final int txt_name5=0x7f0a0011;
-        public static final int txt_score1=0x7f0a000a;
-        public static final int txt_score2=0x7f0a000c;
-        public static final int txt_score3=0x7f0a000e;
-        public static final int txt_score4=0x7f0a0010;
-        public static final int txt_score5=0x7f0a0012;
+        public static final int list_highscore=0x7f0a0009;
+        public static final int txt_highscore_name=0x7f0a0018;
+        public static final int txt_highscore_score=0x7f0a0019;
+        public static final int txt_name=0x7f0a0013;
     }
     public static final class layout {
         public static final int dialog_exit=0x7f030000;
@@ -112,6 +108,7 @@ public final class R {
         public static final int dialog_level=0x7f030003;
         public static final int dialog_name=0x7f030004;
         public static final int dialog_pause=0x7f030005;
+        public static final int list_row=0x7f030006;
     }
     public static final class menu {
         public static final int main=0x7f090000;
@@ -119,6 +116,7 @@ public final class R {
     public static final class string {
         public static final int app_name=0x7f070000;
         public static final int txt_exit=0x7f070001;
+        public static final int txt_name_hint=0x7f070002;
     }
     public static final class style {
         public static final int Animations=0x7f080003;

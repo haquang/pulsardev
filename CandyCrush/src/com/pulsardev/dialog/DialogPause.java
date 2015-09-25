@@ -24,7 +24,7 @@ public class DialogPause extends Dialog
     this.activity = ((Activity)context);
     setContentView(R.layout.dialog_pause);
   //  Util.resizeDialog(findViewById(R.id.dialogPauseLayout));
-    ((Button)findViewById(R.id.button_tryagain)).setOnClickListener(this);
+    ((Button)findViewById(R.id.button_resume)).setOnClickListener(this);
     
   }
 
@@ -33,7 +33,7 @@ public void onClick(View view)
   {
 	  try{
 			switch (view.getId()) {
-			case R.id.button_tryagain:
+			case R.id.button_resume:
 				this.dismiss();
 				break;
 

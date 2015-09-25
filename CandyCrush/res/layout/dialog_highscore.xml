@@ -9,156 +9,43 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/bg"
+        android:background="@drawable/bg_setting"
         android:gravity="center"
         android:orientation="vertical"
         android:paddingLeft="@dimen/dim_10"
         android:paddingRight="@dimen/dim_10" >
 
         <ImageView
-            android:id="@+id/img_paused"
+            android:id="@+id/img_highscore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
-            android:src="@drawable/paused" />
+            android:layout_marginTop="@dimen/dim_10"
+            android:src="@drawable/highscore" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center" >
+            android:layout_marginLeft="@dimen/dim_50"
+            android:layout_marginRight="@dimen/dim_50"
+            android:layout_weight="2"
+            android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/txt_name1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="left"
-                android:lines="1"
-                android:text=""
-                android:textSize="25sp" />
+            <ListView
+                android:id="@+id/list_highscore"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+            </ListView>
 
-            <TextView
-                android:id="@+id/txt_score1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:gravity="right"
-                android:lines="1"
-                android:text=""
-                android:textSize="25sp" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center" >
-
-            <TextView
-                android:id="@+id/txt_name2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="left"
-                android:lines="1"
-                android:text=""
-                android:textSize="25sp" />
-
-            <TextView
-                android:id="@+id/txt_score2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:gravity="right"
-                android:lines="1"
-                android:text=""
-                android:textSize="25sp" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center" >
-
-            <TextView
-                android:id="@+id/txt_name3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="left"
-                android:lines="1"
-                android:text=""
-                android:textSize="25sp" />
-
-            <TextView
-                android:id="@+id/txt_score3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:gravity="right"
-                android:lines="1"
-                android:text=""
-                android:textSize="25sp" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center" >
-
-            <TextView
-                android:id="@+id/txt_name4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="left"
-                android:lines="1"
-                android:text=""
-                android:textSize="25sp" />
-
-            <TextView
-                android:id="@+id/txt_score4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:gravity="right"
-                android:lines="1"
-                android:text=""
-                android:textSize="25sp" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center" >
-
-            <TextView
-                android:id="@+id/txt_name5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="start"
-                android:lines="1"
-                android:text="Quang"
-                android:textSize="25sp" />
-
-            <TextView
-                android:id="@+id/txt_score5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:gravity="end"
-                android:lines="1"
-                android:text="2"
-                android:textSize="25sp" />
-        </RelativeLayout>
+        </LinearLayout>
 
         <Button
             android:id="@+id/button_finish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dim_60"
-            android:background="@drawable/btn_resume" />
+            android:layout_marginBottom="@dimen/dim_40"
+            android:background="@drawable/btn_ok" />
     </LinearLayout>
 
 </RelativeLayout>

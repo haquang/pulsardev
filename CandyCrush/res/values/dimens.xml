@@ -15,5 +15,8 @@
     
     <dimen name="dialog_button_text_normal">60sp</dimen>
     <dimen name="dialog_button_text_large">75sp</dimen>
-    <dimen name="dialog_button_text_small">45sp</dimen>
+    <dimen name="dialog_button_text_small">55sp</dimen>
+    <dimen name="dialog_button_text_xsmall">45sp</dimen>
+    
+    <dimen name="txt_highscore">16sp</dimen>
 </resources>

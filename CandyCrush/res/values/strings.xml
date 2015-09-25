@@ -4,5 +4,7 @@
     <string name="app_name">CandyCrush</string>
     
     <string name="txt_exit">You want to exit the game ?.</string>
+    
+    <string name="txt_name_hint">Enter your name</string>
 
 </resources>
