@@ -10,14 +10,15 @@ import android.content.Context;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 public class DialogName extends Dialog
 implements View.OnClickListener
 {
 	Activity m_activity;
 	public static GameScene m_scene;
-	Button no;
-	Button yes;
+	ImageButton no;
+	ImageButton yes;
 	EditText txt_name;
 
 	public DialogName(Context paramContext)
@@ -27,8 +28,8 @@ implements View.OnClickListener
 		this.m_activity = ((Activity)paramContext);
 		setContentView(R.layout.dialog_name);
 		//  Util.resizeDialog(findViewById(R.id.dialogExitLayout));
-		yes = ((Button)findViewById(R.id.button_name_OK));
-		no = ((Button)findViewById(R.id.button_name_cancel));
+		yes = ((ImageButton)findViewById(R.id.button_name_OK));
+		no = ((ImageButton)findViewById(R.id.button_name_cancel));
 		txt_name = (EditText)findViewById(R.id.txt_name);
 		yes.setOnClickListener(this);
 		no.setOnClickListener(this);
