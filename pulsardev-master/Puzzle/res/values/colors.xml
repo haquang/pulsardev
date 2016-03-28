@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="bg_darker_blue">#7edfd5</color>
-    <color name="bg_lighter_blue">#c7f3ee</color>
-    <color name="bg_stroke">#8d8d8d</color>
-    
-    <color name="button_purple_color">#7C529E</color>
-</resources>
