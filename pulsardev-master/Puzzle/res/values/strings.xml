@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Fast 15 Puzzle</string>
+    
+    <string name="txt_exit">You want to exit the game ?.</string>
+    
+    <string name="txt_name_hint">Enter your name</string>
+
+</resources>
