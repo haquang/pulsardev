@@ -131,7 +131,7 @@ public class Matrix2D {
 		if ((row > _matrix_size) || (col >= _matrix_size)){
 			return null;
 		}
-		return (new Point(_shift_col + col * _item_size,_shift_row + (_matrix_size - row) * _item_size));
+		return (new Point(_shift_col + col * _item_size,_shift_row + (_matrix_size -row) * _item_size));
 	}
 
 //	public Point getZeroPxPy(){

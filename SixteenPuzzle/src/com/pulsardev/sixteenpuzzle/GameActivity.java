@@ -17,6 +17,7 @@ import com.pulsardev.config.Constant;
 
 import android.graphics.Point;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 
@@ -66,9 +67,10 @@ public class GameActivity extends BaseGameActivity  {
 		_screen_width = display.widthPixels;
 		
 		m_camera = new Camera(0.0F, 0.0F, _camera_width, _camera_height);
-		EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.LANDSCAPE_SENSOR, new FillResolutionPolicy(), this.m_camera);
+		EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.PORTRAIT_FIXED, new FillResolutionPolicy(), this.m_camera);
 		engineOptions.getAudioOptions().setNeedsMusic(true).setNeedsSound(true);
 		engineOptions.setWakeLockOptions(WakeLockOptions.SCREEN_ON);
+		
 		return engineOptions;
 	}
 	public Point getScreenSizeByRatio()
@@ -84,16 +86,16 @@ public class GameActivity extends BaseGameActivity  {
 		if (ratio > 1.3 && ratio < 1.4)
 		{
 
-			fileFolderForRatio = "1024x768";
-			screenPoints.x = 1024;
-			screenPoints.y = 768;
+			fileFolderForRatio = "768x1024";
+			screenPoints.x = 768;
+			screenPoints.y = 1024;
 
 		} else
 		{
 
-			fileFolderForRatio = "1280x768";
-			screenPoints.x = 1280;
-			screenPoints.y = 768;
+			fileFolderForRatio = "768x1280";
+			screenPoints.x = 768;
+			screenPoints.y = 1280;
 
 		}
 

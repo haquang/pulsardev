@@ -6,13 +6,10 @@ import java.util.HashMap;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.ButtonSprite;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
 import org.andengine.input.touch.TouchEvent;
-import org.andengine.util.adt.color.Color;
-
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.pulsardev.components.Highscore;
 import com.pulsardev.components.Matrix2D;
@@ -29,8 +26,6 @@ import com.pulsardev.dialog.DialogName;
 import com.pulsardev.dialog.DialogPause;
 import com.pulsardev.sixteenpuzzle.GameScene;
 import com.pulsardev.sixteenpuzzle.SceneManager.SceneType;
-import com.pulsardev.util.Util;
-
 import android.graphics.Point;
 import android.util.Log;
 
@@ -38,6 +33,7 @@ import android.util.Log;
 public class GameScene extends BaseScene {
 	private HUD gameHUD;
 	private Text t_score_text;
+	private Text t_timer_text;
 	private Score _score; 
 	private ButtonSprite btn_exit;
 	private ButtonSprite btn_play;
@@ -46,13 +42,14 @@ public class GameScene extends BaseScene {
 	private ButtonSprite btn_sound_on;
 	private ButtonSprite btn_sound_off;
 	//	private ButtonSprite btn_pause;
-	private ProgressBar m_progress_bar;
+	private Sprite m_slogan;
+	private Sprite m_timer_logo;
 	private Highscore m_high_score;
 	InterstitialAd m_ads;
 	HashMap<Point, NumSprite> _map;
 	int shift_row = 0;
 	int shift_col = 0;
-	int game_zone_height;
+	int game_zone_width;
 	int square_size;
 	int grid_size = Constant.GRID_SIZE_DEFAULT;
 	int _level = 1;
@@ -76,24 +73,45 @@ public class GameScene extends BaseScene {
 		createBackground();
 		initialize();
 		initSize();
+		createSlogan();
 		createButton();
-		createHUD();
+//		createHUD();
 		createGame();
-		createProgressBar();
 	}
-	private void createProgressBar() {
-		// TODO Auto-generated method stub
-		m_progress_bar = new ProgressBar(GameActivity.getCameraWidth()/2 , (int) (0.95*GameActivity.getCameraHeight()), m_resource_manager.m_progress_region, m_vbom,square_size * grid_size);
-		m_progress_bar.setTotalTime(Constant.TOTAL_TIME);
-		m_progress_bar.start();
+	private void createSlogan() {
+		// Application slogan
+		
+		Point slogan_position = new Point();
+		slogan_position.x = (int) ((0.9*game_zone_width)/2);
+		slogan_position.y = (int) (0.95*GameActivity.getCameraHeight());
+		m_slogan = new Sprite(slogan_position.x, slogan_position.y, m_resource_manager.m_slogan_region, m_vbom);
+		m_slogan.setScale((float) (0.8*game_zone_width/m_slogan.getWidth()));
+		attachChild(m_slogan);
+		
+		// Timer logo
+		
+
+		Point timer_position = new Point();
+		timer_position.x = (int) ((0.6*game_zone_width)/2);
+		timer_position.y = (int) (0.5*(GameActivity.getCameraHeight() + game_zone_width + shift_row/2));
+		m_timer_logo = new Sprite(timer_position.x, timer_position.y, m_resource_manager.m_timer_region, m_vbom);
+		m_timer_logo.setScale((float) (0.12*game_zone_width/m_timer_logo.getWidth()));
+		attachChild(m_timer_logo);
+		
+		t_timer_text = new Text(timer_position.x + square_size/2 + m_timer_logo.getWidth()/2 , timer_position.y, m_resource_manager.font, "0123456789", new TextOptions(org.andengine.util.adt.align.HorizontalAlign.CENTER), m_vbom);
+		t_timer_text.setText("00:00");
+		t_timer_text.setColor(80,51,56);
+		t_timer_text.setPosition(timer_position.x + square_size/2 + t_timer_text.getWidth()/2, timer_position.y);
+		attachChild(t_timer_text);
 	}
+
 	private void createGame() {
 		Point p;
 
 		// Create random matrix
-//		m_game_state.createRandomMatrix();
-		m_game_state.createTestMatrix();
-		//	m_game_state.showMatrix2D();
+		m_game_state.createRandomMatrix();
+//		m_game_state.createTestMatrix();
+		m_game_state.showMatrix2D();
 
 		// Create NumItem & add to Hash table
 		try {
@@ -147,10 +165,10 @@ public class GameScene extends BaseScene {
 
 	}
 	private void initSize(){
-		game_zone_height = (int) (0.9 * GameActivity.getCameraHeight());
-		square_size = game_zone_height/grid_size;
-		shift_col = (GameActivity.getCameraWidth() - grid_size * square_size)/2 + square_size/2;
-		shift_row = -square_size/2;
+		game_zone_width = (int) (0.98*GameActivity.getCameraWidth());
+		square_size = game_zone_width/grid_size;
+		shift_col = (int) (0.01*GameActivity.getCameraWidth()) + square_size/2;
+		shift_row = 0;
 		// Matrix class init
 		Matrix2D._item_size = square_size;
 
@@ -159,12 +177,12 @@ public class GameScene extends BaseScene {
 		NumSprite._size = square_size;
 	}
 	private void createBackground(){
-		setBackground(new Background(Color.BLACK));
+		setBackground(new Background(79,200,201));
 	}
 
 	private void createButton(){
 		// Button Exit
-		btn_exit = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 , GameActivity.getCameraHeight()/4, m_resource_manager.m_button_region[Constant.BTN_EXIT], m_vbom){
+		btn_exit = new ButtonSprite(game_zone_width-square_size/2,game_zone_width + square_size,  m_resource_manager.m_button_region[Constant.BTN_EXIT], m_vbom){
 			@Override
 			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				if(pTouchEvent.isActionDown()) {
@@ -183,46 +201,46 @@ public class GameScene extends BaseScene {
 			}
 		};
 		registerTouchArea(btn_exit);
-		btn_exit.setScale(0.75f);
+		btn_exit.setScale(0.5f);
 		attachChild(btn_exit);
 
-		// Button sound on
-
-		btn_sound_on = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 ,  GameActivity.getCameraHeight()/2, m_resource_manager.m_button_region[Constant.BTN_SOUND_ON], m_vbom){
-			@Override
-			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-
-				if(pTouchEvent.isActionDown()) {
-					this.setVisible(false);
-					sound_on = false;
-					btn_sound_off.setVisible(true);
-				}
-				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
-			}
-
-		};
-		btn_sound_on.setScale(0.75f);
-		registerTouchArea(btn_sound_on);
-		attachChild(btn_sound_on);
-		// Button sound off
-		btn_sound_off = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 ,  GameActivity.getCameraHeight()/2, m_resource_manager.m_button_region[Constant.BTN_SOUND_OFF], m_vbom){
-			@Override
-			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if(pTouchEvent.isActionDown()) {
-					this.setVisible(false);
-					sound_on = true;
-					btn_sound_on.setVisible(true);
-				}
-				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
-			}
-
-		};
-		btn_sound_off.setScale(0.75f);
-		btn_sound_off.setVisible(false);
-		registerTouchArea(btn_sound_off);
-		attachChild(btn_sound_off);
+//		// Button sound on
+//
+//		btn_sound_on = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 ,  GameActivity.getCameraHeight()/2, m_resource_manager.m_button_region[Constant.BTN_SOUND_ON], m_vbom){
+//			@Override
+//			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+//
+//				if(pTouchEvent.isActionDown()) {
+//					this.setVisible(false);
+//					sound_on = false;
+//					btn_sound_off.setVisible(true);
+//				}
+//				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+//			}
+//
+//		};
+//		btn_sound_on.setScale(0.75f);
+//		registerTouchArea(btn_sound_on);
+//		attachChild(btn_sound_on);
+//		// Button sound off
+//		btn_sound_off = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 ,  GameActivity.getCameraHeight()/2, m_resource_manager.m_button_region[Constant.BTN_SOUND_OFF], m_vbom){
+//			@Override
+//			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+//				if(pTouchEvent.isActionDown()) {
+//					this.setVisible(false);
+//					sound_on = true;
+//					btn_sound_on.setVisible(true);
+//				}
+//				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+//			}
+//
+//		};
+//		btn_sound_off.setScale(0.75f);
+//		btn_sound_off.setVisible(false);
+//		registerTouchArea(btn_sound_off);
+//		attachChild(btn_sound_off);
 		// Button Settings
-		btn_settings = new ButtonSprite(GameActivity.getCameraWidth() - shift_col/3 , 3 * GameActivity.getCameraHeight()/4, m_resource_manager.m_button_region[Constant.BTN_SETTINGS], m_vbom){
+		btn_settings = new ButtonSprite((float) (0.9*GameActivity.getCameraWidth()) , (float) (0.95 * GameActivity.getCameraHeight()), m_resource_manager.m_button_region[Constant.BTN_SETTINGS], m_vbom){
 			@Override
 			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				pauseGame();
@@ -242,34 +260,34 @@ public class GameScene extends BaseScene {
 			}
 
 		};
-		btn_settings.setScale(0.75f);
+		btn_settings.setScale(0.5f);
 		registerTouchArea(btn_settings);
 		attachChild(btn_settings);
 		// Button Play
-		btn_play = new ButtonSprite(shift_col/3 , 2*GameActivity.getCameraHeight()/5, m_resource_manager.m_button_region[Constant.BTN_PLAY], m_vbom){
-			@Override
-			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				pauseGame();
-				if(pTouchEvent.isActionDown()) {
-					//					this.setVisible(false);
-					//	btn_pause.setVisible(true);
-					m_activity.runOnUiThread(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							new DialogPause(m_activity).show();
-						}
-					});
-				}
-				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
-			}
-
-		};
-		btn_play.setScale(0.75f);
-		registerTouchArea(btn_play);
-
-		attachChild(btn_play);
+//		btn_play = new ButtonSprite(shift_col/3 , 2*GameActivity.getCameraHeight()/5, m_resource_manager.m_button_region[Constant.BTN_PLAY], m_vbom){
+//			@Override
+//			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+//				pauseGame();
+//				if(pTouchEvent.isActionDown()) {
+//					//					this.setVisible(false);
+//					//	btn_pause.setVisible(true);
+//					m_activity.runOnUiThread(new Runnable()
+//					{
+//						@Override
+//						public void run()
+//						{
+//							new DialogPause(m_activity).show();
+//						}
+//					});
+//				}
+//				return super.onAreaTouched(pTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+//			}
+//
+//		};
+//		btn_play.setScale(0.75f);
+//		registerTouchArea(btn_play);
+//
+//		attachChild(btn_play);
 
 		//		btn_pause = new ButtonSprite(shift_col/3 , 2*GameActivity.getCameraHeight()/5, m_resource_manager.m_button_region[Constant.BTN_PAUSE], m_vbom){
 		//			@Override
@@ -290,7 +308,7 @@ public class GameScene extends BaseScene {
 		//		attachChild(btn_pause);
 
 		// Button restart
-		btn_restart = new ButtonSprite(shift_col/3 , GameActivity.getCameraHeight()/5, m_resource_manager.m_button_region[Constant.BTN_RESTART], m_vbom){
+		btn_restart = new ButtonSprite(square_size/2,game_zone_width + square_size,m_resource_manager.m_button_region[Constant.BTN_RESTART], m_vbom){
 			@Override
 			public boolean onAreaTouched(TouchEvent pTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
 				if(pTouchEvent.isActionDown()) {
@@ -302,7 +320,7 @@ public class GameScene extends BaseScene {
 			}
 
 		};
-		btn_restart.setScale(0.75f);
+		btn_restart.setScale(0.5f);
 		registerTouchArea(btn_restart);
 		attachChild(btn_restart);
 	}
@@ -324,20 +342,16 @@ public class GameScene extends BaseScene {
 		});
 	}
 	public void pauseGame(){
-		m_progress_bar.pause();
 		NumSprite.istouchable = false;
 	}
 
 	public void resumeGame(){
-		m_progress_bar.resume();
 		NumSprite.istouchable = true;
 	}
 
 	public void quitGame(){
 		NumSprite.istouchable = false;
 		removeMap();
-		removeList.clear();
-		m_progress_bar.stop();
 		System.exit(0);
 	}
 	public void removeMap(){
@@ -354,24 +368,14 @@ public class GameScene extends BaseScene {
 	}
 	public void restartGame(){
 		removeMap();
-		m_progress_bar.reset();
-		m_progress_bar.start();
-		removeList.clear();
-		_score.reset();
 		createGame();
 	}
 
 	public void levelChange() {
-
 		initSize();
-		m_progress_bar.setTotalTime(Constant.TOTAL_TIME);
-		_score.setLevel(_level);
-		_score.reset();
-		removeList.clear();
 		m_game_state.setSize(grid_size);
 		createGame();
 		NumSprite.istouchable = true;
-		m_progress_bar.resume();
 	}
 
 	public void onTouchMovable(NumSprite sprite){
@@ -546,7 +550,6 @@ public class GameScene extends BaseScene {
 		m_camera.setCenter(GameActivity.getCameraWidth()/2, GameActivity.getCameraHeight()/2);
 		removeMap();
 		removeList.clear();
-		m_progress_bar.stop();	
 		this.detachSelf();
 		this.dispose();
 	}

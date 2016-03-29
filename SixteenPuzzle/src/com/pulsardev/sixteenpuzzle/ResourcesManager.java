@@ -53,6 +53,12 @@ public class ResourcesManager {
 	public BitmapTextureAtlas m_progress_atlas;
 	public TextureRegion m_progress_region;
 	
+	public BitmapTextureAtlas m_slogan_atlas;
+	public TextureRegion m_slogan_region;
+	
+	public BitmapTextureAtlas m_timer_atlas;
+	public TextureRegion m_timer_region;
+	
 	public BitmapTextureAtlas m_return_button_atlas;
 	public TextureRegion m_return_button_region;
 
@@ -137,6 +143,24 @@ public class ResourcesManager {
 		m_progress_atlas = new BitmapTextureAtlas(m_engine.getTextureManager(), 512, 128, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		m_progress_region = BitmapTextureAtlasTextureRegionFactory .createFromAsset(m_progress_atlas, m_activity, "progressbar.png", 0, 0);
 		m_engine.getTextureManager().loadTexture(m_progress_atlas);
+		
+		/*
+		 *  Load slogan region
+		 */
+		
+		m_slogan_atlas = new BitmapTextureAtlas(m_engine.getTextureManager(), 512, 128, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		m_slogan_region = BitmapTextureAtlasTextureRegionFactory .createFromAsset(m_slogan_atlas, m_activity, "app_slogan.png", 0, 0);
+		m_engine.getTextureManager().loadTexture(m_slogan_atlas);
+		
+		/*
+		 *  Load timer region
+		 */
+		
+		m_timer_atlas = new BitmapTextureAtlas(m_engine.getTextureManager(), 64, 64, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		m_timer_region = BitmapTextureAtlasTextureRegionFactory .createFromAsset(m_timer_atlas, m_activity, "icon_time.png", 0, 0);
+		m_engine.getTextureManager().loadTexture(m_timer_atlas);
+		
+		
 	}
 
 	private void loadGameFonts()

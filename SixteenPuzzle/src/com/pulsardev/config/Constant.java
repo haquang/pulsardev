@@ -7,8 +7,8 @@ public class Constant {
 	 */
 	
 	public static final String TAG = "Fifteen";
-	public static final int CAMERA_HEIGHT = 768;
-	public static final int CAMERA_WIDTH = 1280;
+	public static final int CAMERA_HEIGHT = 1280;
+	public static final int CAMERA_WIDTH = 768;
 	
 	public static final int ITEM_ZERO = 0;
     public static final int ITEM_ONE = 1;
